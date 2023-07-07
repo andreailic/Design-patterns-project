@@ -1,4 +1,4 @@
-package dialogs;
+package drawingDialogs;
 
 import java.awt.BorderLayout;
 
@@ -136,6 +136,8 @@ public class RectangleDialog extends JDialog {
 									.addComponent(btnCancel))));
 			pnlSouth.setLayout(gl_pnlSouth);
 		}
+		
+		setVisible(true);
 	}
 
 	public void validate(String width, String height) {

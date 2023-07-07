@@ -1,4 +1,4 @@
-package dialogs;
+package drawingDialogs;
 
 import java.awt.BorderLayout;
 
@@ -119,6 +119,8 @@ public class CircleDialog extends JDialog {
 									.addComponent(btnConfirm))));
 			pnlSouth.setLayout(gl_pnlSouth);
 		}
+		
+		setVisible(true);
 	}
 
 	public void validate(String radius) {
