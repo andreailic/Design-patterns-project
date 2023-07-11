@@ -2,6 +2,7 @@ package mvc;
 
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -21,6 +22,8 @@ public class Frame extends JFrame {
 	private JToggleButton tglbtnNewToggleButton;
 	private JToggleButton tglbtnLine;
 	private JToggleButton tglbtnCircle;
+	private JToggleButton tglbtnDonut;
+	private JToggleButton tglbtnSelect;
 	
 	public Frame() {
 		setTitle("Design patterns");
@@ -54,6 +57,15 @@ public class Frame extends JFrame {
 		tglbtnCircle = new JToggleButton("Circle");
 		toolbarShapes.add(tglbtnCircle);
 		toggleGroup.add(tglbtnCircle);
+		
+		tglbtnDonut = new JToggleButton("Donut");
+		toolbarShapes.add(tglbtnDonut);
+		toggleGroup.add(tglbtnDonut);
+		
+		tglbtnSelect = new JToggleButton("Select");
+		tglbtnSelect.setBackground(Color.YELLOW);
+		toolbarShapes.add(tglbtnSelect);
+		toggleGroup.add(tglbtnSelect);
 		
 		JToolBar toolBarActions = new JToolBar();
 		toolBarActions.setOrientation(SwingConstants.VERTICAL);
@@ -104,6 +116,14 @@ public class Frame extends JFrame {
 
 	public JToggleButton getTglbtnCircle() {
 		return tglbtnCircle;
+	}
+
+	public JToggleButton getTglbtnDonut() {
+		return tglbtnDonut;
+	}
+
+	public JToggleButton getTglbtnSelect() {
+		return tglbtnSelect;
 	}
 	
 }
