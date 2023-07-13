@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 
-public class Circle extends Shape {
+public class Circle extends AreaShape {
+	
+	private static final long serialVersionUID = 1L;
 	protected Point center;
 	protected int r;
 	

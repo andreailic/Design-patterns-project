@@ -3,8 +3,10 @@ package geometry;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Point extends Shape{
+public class Point extends Shape {
 
+	
+	private static final long serialVersionUID = 1L;
 	protected int x;
 	protected int y;
 
@@ -25,7 +27,6 @@ public class Point extends Shape{
 	
 	@Override
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		if (o instanceof Point)
 			return (int) (this.distance(0, 0) - ((Point) o).distance(0, 0));
 		return 0;
@@ -33,7 +34,6 @@ public class Point extends Shape{
 	
 	@Override
 	public void moveBy(int x, int y) {
-		// TODO Auto-generated method stub
 		this.x = this.x + x;
 		this.y += y;
 	}
@@ -43,24 +43,18 @@ public class Point extends Shape{
 		g.setColor(this.getBorderColor());
 		g.drawLine(x-2, y, x+2, y);
 		g.drawLine(x, y-2, x, y+2);
+		
 		if(isSelected()) {
 			g.setColor(Color.BLUE);
-			g.drawRect(x-3, y-3, 6, 6);
-			
-			
+			g.drawRect(x-3, y-3, 6, 6);	
 		}
-			
 	}
 
 	public boolean contains(int x, int y) {
-//		if(this.distance(x, y) <= 3)
-//			return true;
-//		return false;
 		return this.distance(x, y) <= 3;
 	}
 
 	public String toString() {
-		// (x, y)
 		if (this.getBorderColor() != null) {
 			return "(x, y)-->" + "("+x+","+this.y+")" + ", borderColor= " + this.getBorderColor().getRGB() ;
 		}else
@@ -89,11 +83,6 @@ public class Point extends Shape{
 	
 	public Point clone() {
 		Point clonePoint = new Point(this.getX(), this.getY(), this.isSelected(), this.getBorderColor());
-		/*Point clonePoint = new Point();
-		clonePoint.setX(this.getX());
-		clonePoint.setY(this.getY());
-		clonePoint.setBorderColor(this.getBorderColor());
-		clonePoint.setSelected(this.isSelected());*/
 		return clonePoint;
 	}
 

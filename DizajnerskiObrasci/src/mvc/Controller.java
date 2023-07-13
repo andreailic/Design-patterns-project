@@ -1,11 +1,13 @@
 package mvc;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import commands.AddShapeCommand;
 import commands.DeselectCommand;
+import commands.EditPointCommand;
 import commands.GenericCommand;
 import commands.SelectShapeCommand;
 import drawingDialogs.CircleDialog;
@@ -17,6 +19,7 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import modificationDialogs.PointModificationDialog;
 
 public class Controller {
 
@@ -137,5 +140,33 @@ public class Controller {
 		}
 
 	}
-
+	
+	public void edit() {
+		Shape selectedShape = model.getOneSelectedShape();
+		
+		if (selectedShape instanceof Point) {
+			Point point = (Point)selectedShape;
+			PointModificationDialog dialog = new PointModificationDialog();
+			dialog.setTxtX(String.valueOf(point.getX()));
+			dialog.setTxtY(String.valueOf(point.getY()));
+			dialog.setColor(point.getBorderColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				
+				int x = Integer.parseInt(dialog.getTxtX());
+				int y = Integer.parseInt(dialog.getTxtY());
+				Color color = dialog.getColor();
+				
+				Point editedPoint = new Point(x, y);
+				editedPoint.setBorderColor(color);
+				
+				EditPointCommand command = new EditPointCommand(point, editedPoint);
+				command.forward();
+			}
+		}
+		
+		frame.repaint();
+	}
 }

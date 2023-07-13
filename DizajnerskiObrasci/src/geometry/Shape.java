@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 public abstract class Shape implements Comparable, Moveable, Cloneable, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private boolean selected;
-	private Color fillColor;
 	private Color borderColor;
 	
 	
@@ -29,15 +29,7 @@ public abstract class Shape implements Comparable, Moveable, Cloneable, Serializ
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
-
-	public Color getFillColor() {
-		return fillColor;
-	}
-
-	public void setFillColor(Color fillColor) {
-		this.fillColor = fillColor;
-	}
-
+	
 	public Color getBorderColor() {
 		return borderColor;
 	}

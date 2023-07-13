@@ -3,6 +3,8 @@ package mvc;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -82,6 +84,12 @@ public class Frame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				controller.mouseClicked(arg0);
+			}
+		});
+		
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.edit();
 			}
 		});
 	}

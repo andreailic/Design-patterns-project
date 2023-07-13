@@ -34,4 +34,15 @@ public class Model {
 		
 		return helpList;
 	}
+	
+	public Shape getOneSelectedShape() {
+		ListIterator<geometry.Shape> it = shapes.listIterator();
+		while (it.hasNext()) {
+			Shape helpShape = it.next();
+			if (helpShape.isSelected())
+				return helpShape;
+		}
+		
+		return null;
+	}
 }
