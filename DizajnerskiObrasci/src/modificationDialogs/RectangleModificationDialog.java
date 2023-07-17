@@ -1,8 +1,10 @@
 package modificationDialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
@@ -21,14 +25,19 @@ public class RectangleModificationDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JButton btnConfirm;
 	private JButton btnCancel;
-	private JLabel lblWidth;
+	private JLabel lblX;
+	private JTextField txtX;
+	private JTextField txtY;
 	private JTextField txtWidth;
 	private JTextField txtHeight;
 	private boolean isConfirmed;
+	private JButton btnBorderColor;
+	private JButton btnAreaColor;
 
 	public RectangleModificationDialog() {
-		setBounds(100, 100, 450, 300);
-		setTitle("Draw rectangle");
+		
+		setBounds(100, 100, 452, 300);
+		setTitle("Modify rectangle");
 		setModal(true);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -36,45 +45,120 @@ public class RectangleModificationDialog extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
-			lblWidth = new JLabel("Width:");
-			lblWidth.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lblX = new JLabel("X:");
+			lblX.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		}
-		JLabel lblNewLabel = new JLabel("Height:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblY = new JLabel("Y:");
+		lblY.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtX = new JTextField();
+		txtX.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtX.setColumns(10);
+		txtY = new JTextField();
+		txtY.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtY.setColumns(10);
+		JLabel lblTitle = new JLabel("Rectangle");
+		
+		btnBorderColor = new JButton("Border color");
+		btnBorderColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Color color = JColorChooser.showDialog(null, "Izaberite boju", btnBorderColor.getBackground());
+				if(color != null) {
+					 btnBorderColor.setBackground(color);
+				}
+			}
+		});
+		
+		JLabel lblNewLabel = new JLabel("Upper left point");
+		
+		JLabel lblWidth = new JLabel("Width:");
+		lblWidth.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel lblY_1 = new JLabel("Height");
+		lblY_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
 		txtWidth = new JTextField();
 		txtWidth.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtWidth.setColumns(10);
+		
 		txtHeight = new JTextField();
 		txtHeight.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtHeight.setColumns(10);
-		JLabel lblRectangle = new JLabel("Rectangle");
+		
+		btnAreaColor = new JButton("Area color");
+		btnAreaColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Color color = JColorChooser.showDialog(null, "Izaberite boju", btnAreaColor.getBackground());
+				if(color != null) {
+					btnAreaColor.setBackground(color);
+				}
+			}
+		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+		gl_contentPanel.setHorizontalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPanel.createSequentialGroup().addGap(55)
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-												.addComponent(lblWidth).addComponent(lblNewLabel))
-										.addGap(105)
-										.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-												.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE,
-														GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-												.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE,
-														GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(
-										gl_contentPanel.createSequentialGroup().addGap(105).addComponent(lblRectangle)))
-						.addContainerGap(92, Short.MAX_VALUE)));
-		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup().addGap(23).addComponent(lblRectangle).addGap(28)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblWidth))
-						.addGap(36)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING).addComponent(lblNewLabel)
-								.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(76, Short.MAX_VALUE)));
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(24)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblX)
+										.addComponent(lblY))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(txtX, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(txtY, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(lblY_1, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED))
+										.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+											.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+												.addComponent(lblTitle)
+												.addComponent(lblWidth))
+											.addPreferredGap(ComponentPlacement.RELATED)))
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE)
+										.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(121)
+									.addComponent(btnBorderColor)
+									.addGap(40)
+									.addComponent(btnAreaColor, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)))
+							.addGap(52))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(70)
+							.addComponent(lblNewLabel)))
+					.addContainerGap())
+		);
+		gl_contentPanel.setVerticalGroup(
+			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addGap(8)
+					.addComponent(lblTitle)
+					.addGap(18)
+					.addComponent(lblNewLabel)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblX)
+						.addComponent(txtX, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblWidth, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblY)
+						.addComponent(txtY, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblY_1, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnAreaColor)
+						.addComponent(btnBorderColor))
+					.addGap(29))
+		);
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel pnlSouth = new JPanel();
@@ -83,7 +167,7 @@ public class RectangleModificationDialog extends JDialog {
 				btnConfirm = new JButton("Confirm");
 				btnConfirm.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (txtWidth.getText().trim().equals("") || txtHeight.getText().trim().equals("")) {
+						if (txtX.getText().trim().equals("") || txtY.getText().trim().equals("")) {
 							getToolkit().beep();
 							JOptionPane.showMessageDialog(null, "Some fields are empty", "Error",
 									JOptionPane.ERROR_MESSAGE, null);
@@ -92,7 +176,7 @@ public class RectangleModificationDialog extends JDialog {
 						}
 
 						try {
-							validate(txtWidth.getText(), txtHeight.getText());
+							validate(txtX.getText(), txtY.getText());
 						} catch (NumberFormatException exc) {
 							getToolkit().beep();
 							JOptionPane.showMessageDialog(null, "Invalid data type", "Error", JOptionPane.ERROR_MESSAGE,
@@ -100,7 +184,7 @@ public class RectangleModificationDialog extends JDialog {
 							isConfirmed = false;
 							return;
 						}
-						if (Integer.parseInt(txtWidth.getText()) < 1 || Integer.parseInt(txtHeight.getText()) < 1) {
+						if (Integer.parseInt(txtX.getText()) < 1 || Integer.parseInt(txtY.getText()) < 1) {
 							getToolkit().beep();
 							JOptionPane.showMessageDialog(null, "Width and height must be positive!", "Error",
 									JOptionPane.ERROR_MESSAGE, null);
@@ -137,7 +221,6 @@ public class RectangleModificationDialog extends JDialog {
 			pnlSouth.setLayout(gl_pnlSouth);
 		}
 		
-		setVisible(true);
 	}
 
 	public void validate(String width, String height) {
@@ -155,19 +238,51 @@ public class RectangleModificationDialog extends JDialog {
 		this.isConfirmed = isConfirmed;
 	}
 
-	public JTextField getTxtWidth() {
-		return txtWidth;
+	public String getTxtStartX() {
+		return txtX.getText();
 	}
 
-	public void setTxtWidth(JTextField txtWidth) {
-		this.txtWidth = txtWidth;
+	public void setTxtStartX(String txtX) {
+		this.txtX.setText(txtX);
 	}
 
-	public JTextField getTxtHeight() {
-		return txtHeight;
+	public String getTxtStartY() {
+		return txtY.getText();
 	}
 
-	public void setTxtHeight(JTextField txtHeight) {
-		this.txtHeight = txtHeight;
+	public void setTxtStartY(String txtY) {
+		this.txtY.setText(txtY);
+	}
+	
+	public String getTxtWidth() {
+		return txtWidth.getText();
+	}
+
+	public void setTxtWidth(String txtX) {
+		this.txtWidth.setText(txtX);
+	}
+
+	public String getTxtHeight() {
+		return txtHeight.getText();
+	}
+
+	public void setTxtHeight(String txtY) {
+		this.txtHeight.setText(txtY);
+	}
+	
+	public Color getBorderColor() {
+		return btnBorderColor.getBackground();
+	}
+	
+	public void setBorderColor(Color color) {
+		btnBorderColor.setBackground(color);
+	}
+	
+	public Color getAreaColor() {
+		return btnAreaColor.getBackground();
+	}
+	
+	public void setAreaColor(Color color) {
+		btnAreaColor.setBackground(color);
 	}
 }

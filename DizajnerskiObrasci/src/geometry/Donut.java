@@ -82,6 +82,18 @@ public class Donut extends Circle {
 			
 		}
 	}
+	
+
+	public Donut clone() {
+		Donut cloneDonut = new Donut();
+		cloneDonut.setBorderColor(this.getBorderColor());
+		cloneDonut.setFillColor(this.getFillColor());
+		cloneDonut.setCenter(this.getCenter().clone());
+		cloneDonut.setInnerRadius(this.getInnerRadius());
+		cloneDonut.setR(this.getR());
+		cloneDonut.setSelected(this.isSelected());
+		return cloneDonut;
+	}
 
 	public String toString() {
 		return center + ", radius: " + r + ", innerRadius: " + innerRadius + ", borderColor= " + this.getBorderColor().getRGB() + ", fillColor= " + this.getFillColor().getRGB();

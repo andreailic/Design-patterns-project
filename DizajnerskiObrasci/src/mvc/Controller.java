@@ -7,7 +7,11 @@ import java.util.List;
 
 import commands.AddShapeCommand;
 import commands.DeselectCommand;
+import commands.EditCircleCommand;
+import commands.EditDonutCommand;
+import commands.EditLineCommand;
 import commands.EditPointCommand;
+import commands.EditRectangleCommand;
 import commands.GenericCommand;
 import commands.SelectShapeCommand;
 import drawingDialogs.CircleDialog;
@@ -19,7 +23,11 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import modificationDialogs.CircleModificationDialog;
+import modificationDialogs.DonutModificationDialog;
+import modificationDialogs.LineModificationDialog;
 import modificationDialogs.PointModificationDialog;
+import modificationDialogs.RectangleModificationDialog;
 
 public class Controller {
 
@@ -163,6 +171,119 @@ public class Controller {
 				editedPoint.setBorderColor(color);
 				
 				EditPointCommand command = new EditPointCommand(point, editedPoint);
+				command.forward();
+			}
+		} else if (selectedShape instanceof Line) {
+			Line line = (Line) selectedShape;
+			LineModificationDialog dialog = new LineModificationDialog();
+			dialog.setTxtStartX(String.valueOf(line.getStartPoint().getX()));
+			dialog.setTxtStartY(String.valueOf(line.getStartPoint().getY()));
+			dialog.setTxtEndX(String.valueOf(line.getEndPoint().getX()));
+			dialog.setTxtEndY(String.valueOf(line.getEndPoint().getY()));
+			dialog.setColor(line.getBorderColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int xStart = Integer.parseInt(dialog.getTxtStartX());
+				int yStart = Integer.parseInt(dialog.getTxtStartY());
+				int xEnd = Integer.parseInt(dialog.getTxtEndX());
+				int yEnd = Integer.parseInt(dialog.getTxtEndY());
+				Color color = dialog.getColor();
+				
+				Line editedLine = new Line(new Point (xStart, yStart), new Point(xEnd, yEnd));
+				editedLine.setBorderColor(color);
+				EditLineCommand command = new EditLineCommand(line, editedLine);
+				command.forward();
+			}
+		} else if (selectedShape instanceof Rectangle) {
+			Rectangle rectangle = (Rectangle) selectedShape;
+			
+			RectangleModificationDialog dialog = new RectangleModificationDialog();
+			dialog.setTxtStartX(String.valueOf(rectangle.getUpperLeftPoint().getX()));
+			dialog.setTxtStartY(String.valueOf(rectangle.getUpperLeftPoint().getY()));
+			dialog.setTxtHeight(String.valueOf(rectangle.getHeight()));
+			dialog.setTxtWidth(String.valueOf(rectangle.getWidth()));
+			dialog.setBorderColor(rectangle.getBorderColor());
+			dialog.setAreaColor(rectangle.getFillColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int x = Integer.parseInt(dialog.getTxtStartX());
+				int y = Integer.parseInt(dialog.getTxtStartY());
+				int width = Integer.parseInt(dialog.getTxtWidth());
+				int height = Integer.parseInt(dialog.getTxtHeight());
+				Color borderColor = dialog.getBorderColor();
+				Color areaColor = dialog.getAreaColor();
+				
+				Rectangle editedRectangle = new Rectangle();
+				editedRectangle.setUpperLeftPoint(new Point (x, y));
+				editedRectangle.setHeight(height);
+				editedRectangle.setWidth(width);
+				editedRectangle.setBorderColor(borderColor);
+				editedRectangle.setFillColor(areaColor);
+				
+				EditRectangleCommand command = new EditRectangleCommand(rectangle, editedRectangle);
+				command.forward();
+			}
+		}  else if (selectedShape instanceof Circle) {
+			Circle circle = (Circle) selectedShape;
+			
+			CircleModificationDialog dialog = new CircleModificationDialog();
+			dialog.setTxtStartX(String.valueOf(circle.getCenter().getX()));
+			dialog.setTxtStartY(String.valueOf(circle.getCenter().getY()));
+			dialog.setTxtRadius(String.valueOf(circle.getR()));
+			dialog.setBorderColor(circle.getBorderColor());
+			dialog.setAreaColor(circle.getFillColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int x = Integer.parseInt(dialog.getTxtStartX());
+				int y = Integer.parseInt(dialog.getTxtStartY());
+				int radius = Integer.parseInt(dialog.getTxtRadius());
+				Color borderColor = dialog.getBorderColor();
+				Color areaColor = dialog.getAreaColor();
+				
+				Circle editedCircle = new Circle();
+				editedCircle.setCenter(new Point(x,y));
+				editedCircle.setR(radius);
+				editedCircle.setBorderColor(borderColor);
+				editedCircle.setFillColor(areaColor);
+				
+				EditCircleCommand command = new EditCircleCommand(circle, editedCircle);
+				command.forward();
+			}
+		}   else if (selectedShape instanceof Donut) {
+			Donut donut = (Donut) selectedShape;
+			
+			DonutModificationDialog dialog = new DonutModificationDialog();
+			dialog.setTxtStartX(String.valueOf(donut.getCenter().getX()));
+			dialog.setTxtStartY(String.valueOf(donut.getCenter().getY()));
+			dialog.setTxtRadius(String.valueOf(donut.getR()));
+			dialog.setTxtInnerRadius(String.valueOf(donut.getInnerRadius()));
+			dialog.setBorderColor(donut.getBorderColor());
+			dialog.setAreaColor(donut.getFillColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int x = Integer.parseInt(dialog.getTxtStartX());
+				int y = Integer.parseInt(dialog.getTxtStartY());
+				int radius = Integer.parseInt(dialog.getTxtRadius());
+				int innerRadius = Integer.parseInt(dialog.getTxtInnerRadius());
+				Color borderColor = dialog.getBorderColor();
+				Color areaColor = dialog.getAreaColor();
+				
+				Donut editedDonut = new Donut();
+				editedDonut.setCenter(new Point(x,y));
+				editedDonut.setR(radius);
+				editedDonut.setInnerRadius(innerRadius);
+				editedDonut.setBorderColor(borderColor);
+				editedDonut.setFillColor(areaColor);
+				
+				EditDonutCommand command = new EditDonutCommand(donut, editedDonut);
 				command.forward();
 			}
 		}
