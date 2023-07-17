@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 import commands.AddShapeCommand;
 import commands.DeselectCommand;
@@ -29,7 +30,8 @@ import modificationDialogs.LineModificationDialog;
 import modificationDialogs.PointModificationDialog;
 import modificationDialogs.RectangleModificationDialog;
 
-public class Controller {
+@SuppressWarnings("deprecation")
+public class Controller extends Observable {
 
 	private Model model;
 	private Frame frame;
@@ -67,7 +69,9 @@ public class Controller {
 
 					SelectShapeCommand command = new SelectShapeCommand(model.getShapes().get(i));
 					command.forward();
+					frame.logCommand(command.toString());
 					frame.getView().repaint();
+					notifyAllObservers();
 					return;
 				} else if (model.getShapes().get(i).contains(clickedPoint.getX(), clickedPoint.getY())
 						&& model.getShapes().get(i).isSelected()) {
@@ -76,25 +80,20 @@ public class Controller {
 					helpList.add(model.getShapes().get(i));
 					DeselectCommand command = new DeselectCommand(helpList);
 					command.forward();
+					frame.logCommand(command.toString());
 					frame.getView().repaint();
+					notifyAllObservers();
 					return;
 				}
 			}
 
-			frame.getView().repaint();
 			DeselectCommand command = new DeselectCommand(model.getSelectedShapes());
 			command.forward();
-			frame.getView().repaint();
-			return;
-
-		}
-
-		if (frame.getTglbtnPoint().isSelected()) {
+		} else if (frame.getTglbtnPoint().isSelected()) {
 			Point point = new Point(clickedPoint.getX(), clickedPoint.getY());
-			GenericCommand commmand = new AddShapeCommand(point, model);
-			commmand.forward();
-
-			frame.repaint();
+			GenericCommand command = new AddShapeCommand(point, model);
+			command.forward();
+			frame.logCommand(command.toString());
 		} else if (frame.getTglbtnNewToggleButton().isSelected()) {
 			RectangleDialog dialog = new RectangleDialog();
 			if (dialog.isConfirmed()) {
@@ -103,20 +102,18 @@ public class Controller {
 
 				Rectangle rectangle = new Rectangle(new Point(clickedPoint.getX(), clickedPoint.getY()), width, height);
 
-				GenericCommand commmand = new AddShapeCommand(rectangle, model);
-				commmand.forward();
-
-				frame.repaint();
+				GenericCommand command = new AddShapeCommand(rectangle, model);
+				command.forward();
+				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnLine().isSelected()) {
 			if (firstClickedPointOfLine == null)
 				firstClickedPointOfLine = new Point(clickedPoint.getX(), clickedPoint.getY());
 			else {
 				Line line = new Line(firstClickedPointOfLine, new Point(clickedPoint.getX(), clickedPoint.getY()));
-				GenericCommand commmand = new AddShapeCommand(line, model);
-				commmand.forward();
-
-				frame.repaint();
+				GenericCommand command = new AddShapeCommand(line, model);
+				command.forward();
+				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnCircle().isSelected()) {
 			CircleDialog dialog = new CircleDialog();
@@ -125,28 +122,25 @@ public class Controller {
 
 				Circle circle = new Circle(new Point(clickedPoint.getX(), clickedPoint.getY()), radius);
 
-				GenericCommand commmand = new AddShapeCommand(circle, model);
-				commmand.forward();
-
-				frame.repaint();
+				GenericCommand command = new AddShapeCommand(circle, model);
+				command.forward();
+				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnDonut().isSelected()) {
 			DonutDialog dialog = new DonutDialog();
 			if (dialog.isConfirmed()) {
 				int radius = Integer.parseInt(dialog.getTxtRadius().getText().toString());
 				int innerRadius = Integer.parseInt(dialog.getTxtInnerRadius().getText().toString());
-				System.out.println(radius);
-				System.out.println(innerRadius);
-
 				Donut donut = new Donut(new Point(clickedPoint.getX(), clickedPoint.getY()), radius, innerRadius);
 
-				GenericCommand commmand = new AddShapeCommand(donut, model);
-				commmand.forward();
-
-				frame.repaint();
+				GenericCommand command = new AddShapeCommand(donut, model);
+				command.forward();
+				frame.logCommand(command.toString());
 			}
 		}
-
+		
+		notifyAllObservers();
+		frame.repaint();
 	}
 	
 	public void edit() {
@@ -172,6 +166,7 @@ public class Controller {
 				
 				EditPointCommand command = new EditPointCommand(point, editedPoint);
 				command.forward();
+				frame.logCommand(command.toString());
 			}
 		} else if (selectedShape instanceof Line) {
 			Line line = (Line) selectedShape;
@@ -195,6 +190,7 @@ public class Controller {
 				editedLine.setBorderColor(color);
 				EditLineCommand command = new EditLineCommand(line, editedLine);
 				command.forward();
+				frame.logCommand(command.toString());
 			}
 		} else if (selectedShape instanceof Rectangle) {
 			Rectangle rectangle = (Rectangle) selectedShape;
@@ -226,6 +222,7 @@ public class Controller {
 				
 				EditRectangleCommand command = new EditRectangleCommand(rectangle, editedRectangle);
 				command.forward();
+				frame.logCommand(command.toString());
 			}
 		}  else if (selectedShape instanceof Circle) {
 			Circle circle = (Circle) selectedShape;
@@ -254,6 +251,7 @@ public class Controller {
 				
 				EditCircleCommand command = new EditCircleCommand(circle, editedCircle);
 				command.forward();
+				frame.logCommand(command.toString());
 			}
 		}   else if (selectedShape instanceof Donut) {
 			Donut donut = (Donut) selectedShape;
@@ -285,9 +283,23 @@ public class Controller {
 				
 				EditDonutCommand command = new EditDonutCommand(donut, editedDonut);
 				command.forward();
+				frame.logCommand(command.toString());
 			}
 		}
 		
+		notifyAllObservers();
 		frame.repaint();
+	}
+
+	public void notifyAllObservers() {
+		List<Boolean> flags = new ArrayList<>();
+		boolean editEnabled = model.getSelectedShapes().size() == 1;
+		boolean selectEnabled = model.getShapes().size() > 0;
+		
+		flags.add(0, editEnabled);
+		flags.add(1, selectEnabled);
+		
+		setChanged();
+		notifyObservers(flags);
 	}
 }

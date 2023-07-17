@@ -8,9 +8,9 @@ public class DrawingApp {
 		Model model = new Model();
 		Frame frame = new Frame();
 		frame.getView().setModel(model);
-		
 		Controller controller = new Controller(model, frame);
 		frame.setController(controller);
+		controller.addObserver(frame);
 		
 		frame.setSize(600, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,24 +1,34 @@
 package mvc;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
-public class Frame extends JFrame {
+@SuppressWarnings("deprecation")
+public class Frame extends JFrame implements Observer {
 	
 	private static final long serialVersionUID = 1L;
-	private View panelForDrawing;
+	private View panelForDrawing = new View();
 	private Controller controller;
 	private JToggleButton tglbtnPoint;
 	private JToggleButton tglbtnNewToggleButton;
@@ -26,6 +36,9 @@ public class Frame extends JFrame {
 	private JToggleButton tglbtnCircle;
 	private JToggleButton tglbtnDonut;
 	private JToggleButton tglbtnSelect;
+	private JButton btnEdit;
+	private JButton btnDelete;
+	private DefaultListModel<String> defaultListModel;
 	
 	public Frame() {
 		setTitle("Design patterns");
@@ -66,6 +79,7 @@ public class Frame extends JFrame {
 		
 		tglbtnSelect = new JToggleButton("Select");
 		tglbtnSelect.setBackground(Color.YELLOW);
+		tglbtnSelect.setEnabled(false);
 		toolbarShapes.add(tglbtnSelect);
 		toggleGroup.add(tglbtnSelect);
 		
@@ -73,11 +87,25 @@ public class Frame extends JFrame {
 		toolBarActions.setOrientation(SwingConstants.VERTICAL);
 		leftToolbarPanel.add(toolBarActions, BorderLayout.SOUTH);
 		
-		JButton btnEdit = new JButton("Edit");
+		btnEdit = new JButton("Edit");
+		btnEdit.setEnabled(false);
 		toolBarActions.add(btnEdit);
 		
-		JButton btnDelete = new JButton("Delete");
+		btnDelete = new JButton("Delete");
 		toolBarActions.add(btnDelete);
+		
+		JPanel logsContainer = new JPanel();
+		logsContainer.setLayout(new BorderLayout());
+		logsContainer.setMinimumSize(new Dimension(200, 0));
+		getContentPane().add(logsContainer, BorderLayout.EAST);
+		
+		defaultListModel = new DefaultListModel<String>();
+		JList<String> logsList = new JList<String>(defaultListModel);
+		logsList.setVisibleRowCount(6);
+		JScrollPane jScrollPane = new JScrollPane(logsList);
+		JLabel logsTitle = new JLabel("App logs");
+		logsContainer.add(logsTitle, BorderLayout.NORTH);
+		logsContainer.add(jScrollPane, BorderLayout.CENTER);
 		
 		/* Listeners */
 		panelForDrawing.addMouseListener(new MouseAdapter() {
@@ -132,6 +160,19 @@ public class Frame extends JFrame {
 
 	public JToggleButton getTglbtnSelect() {
 		return tglbtnSelect;
+	}
+	
+	public void logCommand(String command) {
+		System.out.println("AJODIASd");
+		defaultListModel.addElement(command);
+	}
+
+	@Override
+	public void update(@SuppressWarnings("deprecation") Observable o, Object arg) {
+		@SuppressWarnings("unchecked")
+		List<Boolean> flags = (List<Boolean>) arg;
+		btnEdit.setEnabled(flags.get(0));
+		tglbtnSelect.setEnabled(flags.get(1));
 	}
 	
 }
