@@ -45,4 +45,16 @@ public class Model {
 		
 		return null;
 	}
+	
+	public int getIndexOfShape(Shape s) {
+		return shapes.indexOf(s);
+	}
+ 	
+	public void removeShape(Shape s) {
+		shapes.remove(s);
+	}
+	
+	public void addShapeOnIndex(Shape s, int i) {
+		shapes.add(i, s);
+	}
 }

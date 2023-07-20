@@ -36,6 +36,12 @@ public class Frame extends JFrame implements Observer {
 	private JToggleButton tglbtnCircle;
 	private JToggleButton tglbtnDonut;
 	private JToggleButton tglbtnSelect;
+	
+	private JButton btnUp;
+	private JButton btnDown;
+	private JButton btnToFront;
+	private JButton btnToBack;
+	
 	private JButton btnEdit;
 	private JButton btnDelete;
 	private DefaultListModel<String> defaultListModel;
@@ -57,7 +63,7 @@ public class Frame extends JFrame implements Observer {
 		toolbarShapes.setOrientation(SwingConstants.VERTICAL);
 		leftToolbarPanel.add(toolbarShapes, BorderLayout.NORTH);
 		
-		tglbtnPoint = new JToggleButton("Point");
+		tglbtnPoint = new JToggleButton("     Point    ");
 		toolbarShapes.add(tglbtnPoint);
 		toggleGroup.add(tglbtnPoint);
 		
@@ -65,33 +71,59 @@ public class Frame extends JFrame implements Observer {
 		toolbarShapes.add(tglbtnNewToggleButton);
 		toggleGroup.add(tglbtnNewToggleButton);
 		
-		tglbtnLine = new JToggleButton("Line");
+		tglbtnLine = new JToggleButton("      Line     ");
 		toolbarShapes.add(tglbtnLine);
 		toggleGroup.add(tglbtnLine);
 		
-		tglbtnCircle = new JToggleButton("Circle");
+		tglbtnCircle = new JToggleButton("    Circle    ");
 		toolbarShapes.add(tglbtnCircle);
 		toggleGroup.add(tglbtnCircle);
 		
-		tglbtnDonut = new JToggleButton("Donut");
+		tglbtnDonut = new JToggleButton("    Donut    ");
 		toolbarShapes.add(tglbtnDonut);
 		toggleGroup.add(tglbtnDonut);
 		
-		tglbtnSelect = new JToggleButton("Select");
+		tglbtnSelect = new JToggleButton("    Select   ");
 		tglbtnSelect.setBackground(Color.YELLOW);
 		tglbtnSelect.setEnabled(false);
 		toolbarShapes.add(tglbtnSelect);
 		toggleGroup.add(tglbtnSelect);
 		
+		JToolBar yAxisActions = new JToolBar();
+		yAxisActions.setOrientation(SwingConstants.VERTICAL);
+		leftToolbarPanel.add(yAxisActions, BorderLayout.CENTER);
+		
+		btnUp = new JButton("       Up       ");
+		btnUp.setEnabled(false);
+		btnUp.setBackground(Color.GREEN);
+		yAxisActions.add(btnUp);
+		
+		btnDown = new JButton("    Down    ");
+		btnDown.setEnabled(false);
+		btnDown.setBackground(Color.GREEN);
+		yAxisActions.add(btnDown);
+		
+		btnToFront = new JButton("  To Front ");
+		btnToFront.setEnabled(false);
+		btnToFront.setBackground(Color.GREEN);
+		yAxisActions.add(btnToFront);
+		
+		btnToBack = new JButton("  To Back ");
+		btnToBack.setEnabled(false);
+		btnToBack.setBackground(Color.GREEN);
+		yAxisActions.add(btnToBack);
+		
 		JToolBar toolBarActions = new JToolBar();
 		toolBarActions.setOrientation(SwingConstants.VERTICAL);
 		leftToolbarPanel.add(toolBarActions, BorderLayout.SOUTH);
 		
-		btnEdit = new JButton("Edit");
+		btnEdit = new JButton("      Edit     ");
 		btnEdit.setEnabled(false);
+		btnEdit.setBackground(Color.YELLOW);
 		toolBarActions.add(btnEdit);
 		
-		btnDelete = new JButton("Delete");
+		btnDelete = new JButton("   Delete   ");
+		btnDelete.setBackground(Color.RED);
 		toolBarActions.add(btnDelete);
 		
 		JPanel logsContainer = new JPanel();
@@ -118,6 +150,36 @@ public class Frame extends JFrame implements Observer {
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.edit();
+			}
+		});
+		
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.delete();
+			}
+		});
+		
+		btnUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.up();
+			}
+		});
+		
+		btnDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.down();
+			}
+		});
+		
+		btnToFront.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.toFront();
+			}
+		});
+		
+		btnToBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.toBack();
 			}
 		});
 	}
@@ -163,16 +225,20 @@ public class Frame extends JFrame implements Observer {
 	}
 	
 	public void logCommand(String command) {
-		System.out.println("AJODIASd");
 		defaultListModel.addElement(command);
 	}
 
 	@Override
-	public void update(@SuppressWarnings("deprecation") Observable o, Object arg) {
+	public void update(Observable o, Object arg) {
 		@SuppressWarnings("unchecked")
 		List<Boolean> flags = (List<Boolean>) arg;
 		btnEdit.setEnabled(flags.get(0));
 		tglbtnSelect.setEnabled(flags.get(1));
+		btnDelete.setEnabled(flags.get(2));
+		btnUp.setEnabled(flags.get(3));
+		btnDown.setEnabled(flags.get(4));
+		btnToFront.setEnabled(flags.get(5));
+		btnToBack.setEnabled(flags.get(6));
 	}
 	
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Observable;
 
 import commands.AddShapeCommand;
+import commands.DeleteCommand;
 import commands.DeselectCommand;
 import commands.EditCircleCommand;
 import commands.EditDonutCommand;
@@ -15,6 +16,7 @@ import commands.EditPointCommand;
 import commands.EditRectangleCommand;
 import commands.GenericCommand;
 import commands.SelectShapeCommand;
+import commands.YAxisCommand;
 import drawingDialogs.CircleDialog;
 import drawingDialogs.DonutDialog;
 import drawingDialogs.RectangleDialog;
@@ -56,6 +58,62 @@ public class Controller extends Observable {
 
 	public void setFrame(Frame frame) {
 		this.frame = frame;
+	}
+	
+	public void up() {
+		Shape shape = model.getOneSelectedShape();
+		int currentIndex = model.getIndexOfShape(shape);
+		int nextIndex = currentIndex + 1;
+		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand(command.toString());
+		notifyAllObservers();
+	}
+
+	public void down() {
+		Shape shape = model.getOneSelectedShape();
+		int currentIndex = model.getIndexOfShape(shape);
+		int nextIndex = currentIndex - 1;
+		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand(command.toString());
+		notifyAllObservers();
+		
+	}
+
+	public void toFront() {
+		Shape shape = model.getOneSelectedShape();
+		int currentIndex = model.getIndexOfShape(shape);
+		int nextIndex = model.getShapes().size() - 1;
+		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand(command.toString());
+		notifyAllObservers();
+		
+	}
+
+	public void toBack() {
+		Shape shape = model.getOneSelectedShape();
+		int currentIndex = model.getIndexOfShape(shape);
+		int nextIndex = 0;
+		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand(command.toString());
+		notifyAllObservers();
+		
+	}
+	
+	public void delete() {
+		List<Shape> shapes = model.getSelectedShapes();
+		DeleteCommand command = new DeleteCommand(shapes, model);
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand(command.toString());
+		notifyAllObservers();
 	}
 
 	public void mouseClicked(MouseEvent clickedPoint) {
@@ -292,14 +350,35 @@ public class Controller extends Observable {
 	}
 
 	public void notifyAllObservers() {
+		
 		List<Boolean> flags = new ArrayList<>();
 		boolean editEnabled = model.getSelectedShapes().size() == 1;
 		boolean selectEnabled = model.getShapes().size() > 0;
+		boolean deleteEnabled = model.getSelectedShapes().size() > 0;
+		
+		boolean upEnabled = false;
+		boolean downEnabled = false;
+		boolean toFrontEnabled = false;
+		boolean toBackEnabled = false;
+		
+		if (model.getSelectedShapes().size() == 1) {
+			Shape selectedShape = model.getOneSelectedShape();
+			int numberOfShapes = model.getShapes().size();
+			
+			upEnabled = toFrontEnabled = model.getIndexOfShape(selectedShape) < numberOfShapes - 1;
+			downEnabled = toBackEnabled = model.getIndexOfShape(selectedShape) > 0;
+		}
 		
 		flags.add(0, editEnabled);
 		flags.add(1, selectEnabled);
+		flags.add(2, deleteEnabled);
+		flags.add(3, upEnabled);
+		flags.add(4, downEnabled);
+		flags.add(5, toFrontEnabled);
+		flags.add(6, toBackEnabled);
 		
 		setChanged();
 		notifyObservers(flags);
 	}
+
 }
