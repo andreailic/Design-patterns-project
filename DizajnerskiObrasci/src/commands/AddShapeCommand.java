@@ -20,8 +20,7 @@ public class AddShapeCommand implements GenericCommand {
 
 	@Override
 	public void backward() {
-		// TODO Auto-generated method stub
-		
+		model.removeShape(shape);
 	}
 
 }

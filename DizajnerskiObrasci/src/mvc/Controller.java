@@ -5,12 +5,14 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Stack;
 
 import commands.AddShapeCommand;
 import commands.DeleteCommand;
 import commands.DeselectCommand;
 import commands.EditCircleCommand;
 import commands.EditDonutCommand;
+import commands.EditHexagonCommand;
 import commands.EditLineCommand;
 import commands.EditPointCommand;
 import commands.EditRectangleCommand;
@@ -19,7 +21,9 @@ import commands.SelectShapeCommand;
 import commands.YAxisCommand;
 import drawingDialogs.CircleDialog;
 import drawingDialogs.DonutDialog;
+import drawingDialogs.HexagonDialog;
 import drawingDialogs.RectangleDialog;
+import geometry.AdapterHexagon;
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -28,6 +32,7 @@ import geometry.Rectangle;
 import geometry.Shape;
 import modificationDialogs.CircleModificationDialog;
 import modificationDialogs.DonutModificationDialog;
+import modificationDialogs.HexagonModificationDialog;
 import modificationDialogs.LineModificationDialog;
 import modificationDialogs.PointModificationDialog;
 import modificationDialogs.RectangleModificationDialog;
@@ -38,6 +43,8 @@ public class Controller extends Observable {
 	private Model model;
 	private Frame frame;
 	private Point firstClickedPointOfLine = null;
+	private Stack<GenericCommand> commandsForUndo = new Stack<GenericCommand>();
+	private Stack<GenericCommand> commandsForRedo = new Stack<GenericCommand>();
 
 	public Controller(Model model, Frame frame) {
 		this.model = model;
@@ -60,12 +67,40 @@ public class Controller extends Observable {
 		this.frame = frame;
 	}
 	
+	public void undo() {
+		if (commandsForUndo.isEmpty()) {
+			return;
+		}
+		
+		GenericCommand command = commandsForUndo.pop();
+		command.backward();
+		frame.getView().repaint();
+		frame.logCommand("UNDO");
+		commandsForRedo.push(command);
+		notifyAllObservers();
+	}
+	
+	public void redo() {
+		if (commandsForRedo.isEmpty()) {
+			return;
+		}
+		
+		GenericCommand command = commandsForRedo.pop();
+		command.forward();
+		frame.getView().repaint();
+		frame.logCommand("REDO");
+		commandsForUndo.push(command);
+		notifyAllObservers();
+	}
+	
 	public void up() {
 		Shape shape = model.getOneSelectedShape();
 		int currentIndex = model.getIndexOfShape(shape);
 		int nextIndex = currentIndex + 1;
 		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
 		command.forward();
+		commandsForUndo.push(command);
+		commandsForRedo.clear();
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
@@ -77,6 +112,8 @@ public class Controller extends Observable {
 		int nextIndex = currentIndex - 1;
 		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
 		command.forward();
+		commandsForUndo.push(command);
+		commandsForRedo.clear();
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
@@ -89,6 +126,8 @@ public class Controller extends Observable {
 		int nextIndex = model.getShapes().size() - 1;
 		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
 		command.forward();
+		commandsForUndo.push(command);
+		commandsForRedo.clear();
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
@@ -101,6 +140,8 @@ public class Controller extends Observable {
 		int nextIndex = 0;
 		YAxisCommand command = new YAxisCommand(currentIndex, nextIndex, model);
 		command.forward();
+		commandsForUndo.push(command);
+		commandsForRedo.clear();
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
@@ -111,6 +152,8 @@ public class Controller extends Observable {
 		List<Shape> shapes = model.getSelectedShapes();
 		DeleteCommand command = new DeleteCommand(shapes, model);
 		command.forward();
+		commandsForUndo.push(command);
+		commandsForRedo.clear();
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
@@ -127,6 +170,8 @@ public class Controller extends Observable {
 
 					SelectShapeCommand command = new SelectShapeCommand(model.getShapes().get(i));
 					command.forward();
+					commandsForUndo.push(command);
+					commandsForRedo.clear();
 					frame.logCommand(command.toString());
 					frame.getView().repaint();
 					notifyAllObservers();
@@ -138,6 +183,8 @@ public class Controller extends Observable {
 					helpList.add(model.getShapes().get(i));
 					DeselectCommand command = new DeselectCommand(helpList);
 					command.forward();
+					commandsForUndo.push(command);
+					commandsForRedo.clear();
 					frame.logCommand(command.toString());
 					frame.getView().repaint();
 					notifyAllObservers();
@@ -147,10 +194,15 @@ public class Controller extends Observable {
 
 			DeselectCommand command = new DeselectCommand(model.getSelectedShapes());
 			command.forward();
+			commandsForUndo.push(command);
+			commandsForRedo.clear();
 		} else if (frame.getTglbtnPoint().isSelected()) {
 			Point point = new Point(clickedPoint.getX(), clickedPoint.getY());
+			point.setBorderColor(frame.getBorderColor());
 			GenericCommand command = new AddShapeCommand(point, model);
 			command.forward();
+			commandsForUndo.push(command);
+			commandsForRedo.clear();
 			frame.logCommand(command.toString());
 		} else if (frame.getTglbtnNewToggleButton().isSelected()) {
 			RectangleDialog dialog = new RectangleDialog();
@@ -159,9 +211,12 @@ public class Controller extends Observable {
 				int width = Integer.parseInt(dialog.getTxtWidth().getText().toString());
 
 				Rectangle rectangle = new Rectangle(new Point(clickedPoint.getX(), clickedPoint.getY()), width, height);
-
+				rectangle.setBorderColor(frame.getBorderColor());
+				rectangle.setFillColor(frame.getInsideColor());
 				GenericCommand command = new AddShapeCommand(rectangle, model);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnLine().isSelected()) {
@@ -169,8 +224,12 @@ public class Controller extends Observable {
 				firstClickedPointOfLine = new Point(clickedPoint.getX(), clickedPoint.getY());
 			else {
 				Line line = new Line(firstClickedPointOfLine, new Point(clickedPoint.getX(), clickedPoint.getY()));
+				line.setBorderColor(frame.getBorderColor());
 				GenericCommand command = new AddShapeCommand(line, model);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
+				firstClickedPointOfLine = null;
 				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnCircle().isSelected()) {
@@ -179,9 +238,13 @@ public class Controller extends Observable {
 				int radius = Integer.parseInt(dialog.getTxtRadius().getText().toString());
 
 				Circle circle = new Circle(new Point(clickedPoint.getX(), clickedPoint.getY()), radius);
-
+				circle.setBorderColor(frame.getBorderColor());
+				circle.setFillColor(frame.getInsideColor());
+				
 				GenericCommand command = new AddShapeCommand(circle, model);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		} else if (frame.getTglbtnDonut().isSelected()) {
@@ -190,9 +253,27 @@ public class Controller extends Observable {
 				int radius = Integer.parseInt(dialog.getTxtRadius().getText().toString());
 				int innerRadius = Integer.parseInt(dialog.getTxtInnerRadius().getText().toString());
 				Donut donut = new Donut(new Point(clickedPoint.getX(), clickedPoint.getY()), radius, innerRadius);
-
+				donut.setBorderColor(frame.getBorderColor());
+				donut.setFillColor(frame.getInsideColor());
+				
 				GenericCommand command = new AddShapeCommand(donut, model);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
+				frame.logCommand(command.toString());
+			}
+		} else if (frame.getTglbtnHexagon().isSelected()) {
+			HexagonDialog dialog = new HexagonDialog();
+			if (dialog.isConfirmed()) {
+				int radius = Integer.parseInt(dialog.getTxtRadius().getText().toString());
+				AdapterHexagon hexagon = new AdapterHexagon(clickedPoint.getX(), clickedPoint.getY(), radius);
+				hexagon.setBorderColor(frame.getBorderColor());
+				hexagon.setFillColor(frame.getInsideColor());
+				
+				GenericCommand command = new AddShapeCommand(hexagon, model);
+				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		}
@@ -224,6 +305,8 @@ public class Controller extends Observable {
 				
 				EditPointCommand command = new EditPointCommand(point, editedPoint);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		} else if (selectedShape instanceof Line) {
@@ -248,6 +331,8 @@ public class Controller extends Observable {
 				editedLine.setBorderColor(color);
 				EditLineCommand command = new EditLineCommand(line, editedLine);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		} else if (selectedShape instanceof Rectangle) {
@@ -280,6 +365,8 @@ public class Controller extends Observable {
 				
 				EditRectangleCommand command = new EditRectangleCommand(rectangle, editedRectangle);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		}  else if (selectedShape instanceof Circle) {
@@ -309,6 +396,8 @@ public class Controller extends Observable {
 				
 				EditCircleCommand command = new EditCircleCommand(circle, editedCircle);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		}   else if (selectedShape instanceof Donut) {
@@ -341,6 +430,35 @@ public class Controller extends Observable {
 				
 				EditDonutCommand command = new EditDonutCommand(donut, editedDonut);
 				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
+				frame.logCommand(command.toString());
+			}
+		}  else if (selectedShape instanceof AdapterHexagon) {
+			AdapterHexagon hexagon = (AdapterHexagon) selectedShape;
+			
+			HexagonModificationDialog dialog = new HexagonModificationDialog();
+			dialog.setTxtStartX(String.valueOf(hexagon.getX()));
+			dialog.setTxtStartY(String.valueOf(hexagon.getY()));
+			dialog.setTxtRadius(String.valueOf(hexagon.getR()));
+			dialog.setBorderColor(hexagon.getBorderColor());
+			dialog.setAreaColor(hexagon.getFillColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int x = Integer.parseInt(dialog.getTxtStartX());
+				int y = Integer.parseInt(dialog.getTxtStartY());
+				int radius = Integer.parseInt(dialog.getTxtRadius());
+				Color borderColor = dialog.getBorderColor();
+				Color areaColor = dialog.getAreaColor();
+				
+				AdapterHexagon editedHexagon = new AdapterHexagon(x, y, radius, false, borderColor, areaColor);
+				
+				EditHexagonCommand command = new EditHexagonCommand(hexagon, editedHexagon);
+				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
 		}
@@ -361,6 +479,9 @@ public class Controller extends Observable {
 		boolean toFrontEnabled = false;
 		boolean toBackEnabled = false;
 		
+		boolean undoEnabled = commandsForUndo.size() > 0;
+		boolean redoEnabled = commandsForRedo.size() > 0;
+		
 		if (model.getSelectedShapes().size() == 1) {
 			Shape selectedShape = model.getOneSelectedShape();
 			int numberOfShapes = model.getShapes().size();
@@ -376,6 +497,8 @@ public class Controller extends Observable {
 		flags.add(4, downEnabled);
 		flags.add(5, toFrontEnabled);
 		flags.add(6, toBackEnabled);
+		flags.add(7, undoEnabled);
+		flags.add(8, redoEnabled);
 		
 		setChanged();
 		notifyObservers(flags);

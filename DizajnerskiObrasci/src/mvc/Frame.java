@@ -23,6 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 
 @SuppressWarnings("deprecation")
 public class Frame extends JFrame implements Observer {
@@ -35,12 +36,19 @@ public class Frame extends JFrame implements Observer {
 	private JToggleButton tglbtnLine;
 	private JToggleButton tglbtnCircle;
 	private JToggleButton tglbtnDonut;
+	private JToggleButton tglbtnHexagon;
 	private JToggleButton tglbtnSelect;
 	
 	private JButton btnUp;
 	private JButton btnDown;
 	private JButton btnToFront;
 	private JButton btnToBack;
+	
+	private JButton btnBorderColor;
+	private JButton btnInsideColor;
+	
+	private JButton btnUndo;
+	private JButton btnRedo;
 	
 	private JButton btnEdit;
 	private JButton btnDelete;
@@ -83,15 +91,23 @@ public class Frame extends JFrame implements Observer {
 		toolbarShapes.add(tglbtnDonut);
 		toggleGroup.add(tglbtnDonut);
 		
+		tglbtnHexagon = new JToggleButton(" Hexagon ");
+		toolbarShapes.add(tglbtnHexagon);
+		toggleGroup.add(tglbtnHexagon);
+		
 		tglbtnSelect = new JToggleButton("    Select   ");
 		tglbtnSelect.setBackground(Color.YELLOW);
 		tglbtnSelect.setEnabled(false);
 		toolbarShapes.add(tglbtnSelect);
 		toggleGroup.add(tglbtnSelect);
 		
+		JPanel centerPartOfLeftToolbarPanel = new JPanel();
+		centerPartOfLeftToolbarPanel.setLayout(new BorderLayout());
+		leftToolbarPanel.add(centerPartOfLeftToolbarPanel, BorderLayout.CENTER);
+		
 		JToolBar yAxisActions = new JToolBar();
 		yAxisActions.setOrientation(SwingConstants.VERTICAL);
-		leftToolbarPanel.add(yAxisActions, BorderLayout.CENTER);
+		centerPartOfLeftToolbarPanel.add(yAxisActions, BorderLayout.NORTH);
 		
 		btnUp = new JButton("       Up       ");
 		btnUp.setEnabled(false);
@@ -113,9 +129,35 @@ public class Frame extends JFrame implements Observer {
 		btnToBack.setBackground(Color.GREEN);
 		yAxisActions.add(btnToBack);
 		
+		JToolBar colorActions = new JToolBar();
+		colorActions.setOrientation(SwingConstants.VERTICAL);
+		centerPartOfLeftToolbarPanel.add(colorActions, BorderLayout.CENTER);
+		
+		btnBorderColor = new JButton("    Border  ");
+		btnBorderColor.setBackground(Color.BLACK);
+		colorActions.add(btnBorderColor);
+		
+		btnInsideColor = new JButton("    Inside    ");
+		btnInsideColor.setBackground(Color.WHITE);
+		colorActions.add(btnInsideColor);
+		
 		JToolBar toolBarActions = new JToolBar();
 		toolBarActions.setOrientation(SwingConstants.VERTICAL);
 		leftToolbarPanel.add(toolBarActions, BorderLayout.SOUTH);
+		
+		JToolBar undoRedoActions = new JToolBar();
+		undoRedoActions.setOrientation(SwingConstants.VERTICAL);
+		centerPartOfLeftToolbarPanel.add(undoRedoActions, BorderLayout.SOUTH);
+		
+		btnUndo = new JButton("    Undo    ");
+		btnUndo.setEnabled(false);
+		btnUndo.setBackground(Color.WHITE);
+		undoRedoActions.add(btnUndo);
+		
+		btnRedo = new JButton("    Redo    ");
+		btnRedo.setEnabled(false);
+		btnRedo.setBackground(Color.WHITE);
+		undoRedoActions.add(btnRedo);
 		
 		btnEdit = new JButton("      Edit     ");
 		btnEdit.setEnabled(false);
@@ -182,6 +224,36 @@ public class Frame extends JFrame implements Observer {
 				controller.toBack();
 			}
 		});
+		
+		btnBorderColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Color color = JColorChooser.showDialog(null, "Border color", btnBorderColor.getBackground());
+				if(color != null) {
+					 btnBorderColor.setBackground(color);
+				}
+			}
+		});
+		
+		btnInsideColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Color color = JColorChooser.showDialog(null, "Inside color", btnInsideColor.getBackground());
+				if(color != null) {
+					 btnInsideColor.setBackground(color);
+				}
+			}
+		});
+		
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.undo();
+			}
+		});
+		
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.redo();
+			}
+		});
 	}
 
 	public View getView() {
@@ -220,8 +292,28 @@ public class Frame extends JFrame implements Observer {
 		return tglbtnDonut;
 	}
 
+	public JToggleButton getTglbtnHexagon() {
+		return tglbtnHexagon;
+	}
+
 	public JToggleButton getTglbtnSelect() {
 		return tglbtnSelect;
+	}
+	
+	public Color getBorderColor() {
+		return btnBorderColor.getBackground();
+	}
+
+	public Color getInsideColor() {
+		return btnInsideColor.getBackground();
+	}
+	
+	public void setBorderColor(Color borderColor) {
+		btnBorderColor.setBackground(borderColor);
+	}
+
+	public void setInsideColor(Color insideColor) {
+		btnInsideColor.setBackground(insideColor);
 	}
 	
 	public void logCommand(String command) {
@@ -239,6 +331,8 @@ public class Frame extends JFrame implements Observer {
 		btnDown.setEnabled(flags.get(4));
 		btnToFront.setEnabled(flags.get(5));
 		btnToBack.setEnabled(flags.get(6));
+		btnUndo.setEnabled(flags.get(7));
+		btnRedo.setEnabled(flags.get(8));
 	}
 	
 }

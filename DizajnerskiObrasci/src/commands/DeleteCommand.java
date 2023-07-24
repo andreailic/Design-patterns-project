@@ -34,8 +34,9 @@ public class DeleteCommand implements GenericCommand {
 
 	@Override
 	public void backward() {
-		
-		
+		for (ShapeIndex s : shapesIndices) {
+			model.addShapeOnIndex(s.getShape(), s.getIndex());
+		}
 	}
 
 }

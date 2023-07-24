@@ -1,0 +1,150 @@
+package drawingDialogs;
+
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
+
+public class HexagonDialog extends JDialog {
+
+	private static final long serialVersionUID = 1L;
+	private final JPanel pnlCenter = new JPanel();
+	private JButton btnConfirm;
+	private JButton btnCancel;
+	private JTextField txtRadius;
+
+	private boolean isConfirmed;
+
+	public HexagonDialog() {
+		setBounds(100, 100, 450, 300);
+		setTitle("Draw hexagon");
+		setResizable(false);
+		setModal(true);
+		setLocationRelativeTo(null);
+		getContentPane().setLayout(new BorderLayout());
+		pnlCenter.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(pnlCenter, BorderLayout.CENTER);
+
+		JLabel lblRadius = new JLabel("Radius:");
+
+		txtRadius = new JTextField();
+		txtRadius.setColumns(10);
+
+		JLabel lblCircle = new JLabel("Hexagon");
+		GroupLayout gl_pnlCenter = new GroupLayout(pnlCenter);
+		gl_pnlCenter.setHorizontalGroup(gl_pnlCenter.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING,
+						gl_pnlCenter.createSequentialGroup().addGap(51).addComponent(lblRadius)
+								.addPreferredGap(ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+								.addComponent(txtRadius, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addGap(119))
+				.addGroup(gl_pnlCenter.createSequentialGroup().addGap(114).addComponent(lblCircle).addContainerGap(264,
+						Short.MAX_VALUE)));
+		gl_pnlCenter.setVerticalGroup(gl_pnlCenter.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlCenter.createSequentialGroup().addGap(27).addComponent(lblCircle).addGap(74)
+						.addGroup(gl_pnlCenter.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtRadius, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblRadius))
+						.addContainerGap(81, Short.MAX_VALUE)));
+		pnlCenter.setLayout(gl_pnlCenter);
+		{
+			JPanel pnlSouth = new JPanel();
+			getContentPane().add(pnlSouth, BorderLayout.SOUTH);
+			{
+				btnConfirm = new JButton("Confirm");
+				btnConfirm.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (txtRadius.getText().trim().equals("")) {
+							getToolkit().beep();
+							JOptionPane.showMessageDialog(null, "Please insert radius!", "Error",
+									JOptionPane.ERROR_MESSAGE, null);
+							isConfirmed = false;
+							return;
+						}
+						try {
+							validate(txtRadius.getText());
+						} catch (NumberFormatException exc) {
+							getToolkit().beep();
+							JOptionPane.showMessageDialog(null, "Invalid data type!", "Error",
+									JOptionPane.ERROR_MESSAGE, null);
+							isConfirmed = false;
+							return;
+						}
+						if (Integer.parseInt(txtRadius.getText()) < 0) {
+							getToolkit().beep();
+							JOptionPane.showMessageDialog(null, "Radius must be greater than 0!", "Error",
+									JOptionPane.ERROR_MESSAGE, null);
+							isConfirmed = false;
+							return;
+						} else {
+							isConfirmed = true;
+							dispose();
+						}
+
+					}
+				});
+				btnConfirm.setFont(new Font("Tahoma", Font.PLAIN, 15));
+				getRootPane().setDefaultButton(btnConfirm);
+			}
+			{
+				btnCancel = new JButton("Cancel");
+				btnCancel.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						dispose();
+					}
+				});
+				btnCancel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+				btnCancel.setActionCommand("Cancel");
+			}
+			GroupLayout gl_pnlSouth = new GroupLayout(pnlSouth);
+			gl_pnlSouth.setHorizontalGroup(
+					gl_pnlSouth.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlSouth.createSequentialGroup()
+							.addGap(73).addComponent(btnConfirm).addGap(161).addComponent(btnCancel).addGap(90)));
+			gl_pnlSouth.setVerticalGroup(gl_pnlSouth.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_pnlSouth.createSequentialGroup().addGap(5)
+							.addGroup(gl_pnlSouth.createParallelGroup(Alignment.BASELINE).addComponent(btnCancel)
+									.addComponent(btnConfirm))));
+			pnlSouth.setLayout(gl_pnlSouth);
+		}
+		
+		setVisible(true);
+	}
+
+	public void validate(String radius) {
+		String supp = "^(([+-])?([1-9]{1})([0-9]+)?)$";
+		if (!radius.matches(supp)) {
+			throw new NumberFormatException();
+		}
+	}
+
+	public boolean isConfirmed() {
+		return isConfirmed;
+	}
+
+	public void setConfirmed(boolean isConfirmed) {
+		this.isConfirmed = isConfirmed;
+	}
+
+	public JTextField getTxtRadius() {
+		return txtRadius;
+	}
+
+	public void setTxtRadius(JTextField txtRadius) {
+		this.txtRadius = txtRadius;
+	}
+
+
+}
