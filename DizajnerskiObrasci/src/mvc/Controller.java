@@ -2,10 +2,15 @@ package mvc;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Stack;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import commands.AddShapeCommand;
 import commands.DeleteCommand;
@@ -23,6 +28,8 @@ import drawingDialogs.CircleDialog;
 import drawingDialogs.DonutDialog;
 import drawingDialogs.HexagonDialog;
 import drawingDialogs.RectangleDialog;
+import files.SaveDrawing;
+import files.SaveManager;
 import geometry.AdapterHexagon;
 import geometry.Circle;
 import geometry.Donut;
@@ -65,6 +72,68 @@ public class Controller extends Observable {
 
 	public void setFrame(Frame frame) {
 		this.frame = frame;
+	}
+	
+	public void newDrawing() {
+		model.clearShapes();
+		frame.clearLogs();
+		commandsForUndo.clear();
+		commandsForRedo.clear();
+		firstClickedPointOfLine = null;
+		
+		frame.getView().repaint();
+		notifyAllObservers();
+	}
+	
+	public void openDrawing() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Specify the painting you want to open");
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		
+		if(fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			
+			try {
+				newDrawing();
+				
+				FileInputStream fis = new FileInputStream(fileChooser.getSelectedFile().getAbsoluteFile());
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				List<Shape> loadedShapes = ((List<Shape>)ois.readObject());
+				for (Shape s: loadedShapes) {
+					model.addShape(s);
+				}
+				
+				ois.close();
+				frame.getView().repaint();
+				notifyAllObservers();
+				
+			} catch (Exception ex) {
+				
+				JOptionPane.showMessageDialog(null, "Drawing failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	public void saveDrawing() {
+		if (model.getShapes().size() == 0) {
+			JOptionPane.showMessageDialog(null, "Drawing is empty!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save drawing");
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		if(fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			
+			SaveManager manager = new SaveManager();
+			SaveDrawing strategy = new SaveDrawing();
+			manager.setStrategy(strategy);
+			
+			strategy.setShapes(model.getShapes());
+			String path = fileChooser.getSelectedFile().getAbsolutePath() + ".bin";
+			manager.save(path);
+			JOptionPane.showMessageDialog(null, "Successfully saved", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	
 	public void undo() {

@@ -3,6 +3,7 @@ package mvc;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,6 +17,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JToggleButton;
@@ -187,6 +189,41 @@ public class Frame extends JFrame implements Observer {
 			public void mouseClicked(MouseEvent arg0) {
 				controller.mouseClicked(arg0);
 			}
+			
+			@Override
+            public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+		            JPopupMenu contextMenu = new JPopupMenu();
+
+		            JMenuItem newDrawing = new JMenuItem("New");
+		            JMenuItem openDrawing = new JMenuItem("Open");
+		            JMenuItem saveDrawing = new JMenuItem("Save");
+
+		            contextMenu.add(newDrawing);
+		            contextMenu.add(openDrawing);
+		            contextMenu.add(saveDrawing);
+		            
+		            newDrawing.addActionListener(new ActionListener() {
+		    			public void actionPerformed(ActionEvent arg0) {
+		    				controller.newDrawing();
+		    			}
+		    		});
+		            
+		            openDrawing.addActionListener(new ActionListener() {
+		    			public void actionPerformed(ActionEvent arg0) {
+		    				controller.openDrawing();
+		    			}
+		    		});
+		            
+		            saveDrawing.addActionListener(new ActionListener() {
+		    			public void actionPerformed(ActionEvent arg0) {
+		    				controller.saveDrawing();
+		    			}
+		    		});
+
+		            contextMenu.show(e.getComponent(), e.getX(), e.getY());
+		        }
+            }
 		});
 		
 		btnEdit.addActionListener(new ActionListener() {
@@ -318,6 +355,10 @@ public class Frame extends JFrame implements Observer {
 	
 	public void logCommand(String command) {
 		defaultListModel.addElement(command);
+	}
+	
+	public void clearLogs() {
+		defaultListModel.clear();
 	}
 
 	@Override

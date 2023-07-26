@@ -57,4 +57,8 @@ public class Model {
 	public void addShapeOnIndex(Shape s, int i) {
 		shapes.add(i, s);
 	}
+
+	public void clearShapes() {
+		shapes = new ArrayList<Shape>();
+	}
 }
