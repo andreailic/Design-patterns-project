@@ -35,5 +35,10 @@ public class EditHexagonCommand implements GenericCommand {
 		oldState.setFillColor(original.getFillColor());
 		oldState.setSelected(original.isSelected());
 	}
+	
+	@Override
+	public String toString() {
+		return "Modified Hexagon " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
 
 }

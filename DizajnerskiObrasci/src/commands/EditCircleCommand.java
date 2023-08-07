@@ -35,4 +35,9 @@ public class EditCircleCommand implements GenericCommand {
 		oldState.setSelected(original.isSelected());
 	}
 	
+	@Override
+	public String toString() {
+		return "Modified Circle " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
+	
 }

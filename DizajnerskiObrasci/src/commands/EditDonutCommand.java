@@ -37,4 +37,8 @@ public class EditDonutCommand implements GenericCommand {
 		oldState.setSelected(original.isSelected());
 	}
 	
+	@Override
+	public String toString() {
+		return "Modified Donut " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
 }

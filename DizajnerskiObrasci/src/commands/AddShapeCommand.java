@@ -22,5 +22,10 @@ public class AddShapeCommand implements GenericCommand {
 	public void backward() {
 		model.removeShape(shape);
 	}
+	
+	@Override
+	public String toString() {
+		return "Add " + shape.getClass().getSimpleName() + " " + shape.toString();
+	}
 
 }

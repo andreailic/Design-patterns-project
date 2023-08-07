@@ -30,5 +30,10 @@ public class YAxisCommand implements GenericCommand {
 		model.removeShape(shape);
 		model.addShapeOnIndex(shape, previousIndex);
 	}
+	
+	@Override
+	public String toString() {
+		return previousIndex + "," + nextIndex;
+	}
 
 }

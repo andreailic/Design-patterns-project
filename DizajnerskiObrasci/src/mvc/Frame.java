@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -32,6 +34,7 @@ public class Frame extends JFrame implements Observer {
 	
 	private static final long serialVersionUID = 1L;
 	private View panelForDrawing = new View();
+	private JPanel bottomOfPanelForDrawing; 
 	private Controller controller;
 	private JToggleButton tglbtnPoint;
 	private JToggleButton tglbtnNewToggleButton;
@@ -55,6 +58,8 @@ public class Frame extends JFrame implements Observer {
 	private JButton btnEdit;
 	private JButton btnDelete;
 	private DefaultListModel<String> defaultListModel;
+	
+	private JButton btnLoadNextCommand;
 	
 	public Frame() {
 		setTitle("Design patterns");
@@ -183,6 +188,14 @@ public class Frame extends JFrame implements Observer {
 		logsContainer.add(logsTitle, BorderLayout.NORTH);
 		logsContainer.add(jScrollPane, BorderLayout.CENTER);
 		
+		bottomOfPanelForDrawing = new JPanel();
+		bottomOfPanelForDrawing.setLayout(new BorderLayout());
+		bottomOfPanelForDrawing.setVisible(false);
+		getContentPane().add(bottomOfPanelForDrawing, BorderLayout.SOUTH);
+		
+		btnLoadNextCommand = new JButton("Load next");
+		bottomOfPanelForDrawing.add(btnLoadNextCommand, BorderLayout.CENTER);
+		
 		/* Listeners */
 		panelForDrawing.addMouseListener(new MouseAdapter() {
 			@Override
@@ -225,6 +238,42 @@ public class Frame extends JFrame implements Observer {
 		        }
             }
 		});
+		
+		logsList.addMouseListener(new MouseAdapter() {
+			
+			@Override
+            public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+		            JPopupMenu contextMenu = new JPopupMenu();
+
+		            JMenuItem openDrawing = new JMenuItem("Open");
+		            JMenuItem saveDrawing = new JMenuItem("Save");
+
+		            contextMenu.add(openDrawing);
+		            contextMenu.add(saveDrawing);
+		            
+		            openDrawing.addActionListener(new ActionListener() {
+		    			public void actionPerformed(ActionEvent arg0) {
+		    				controller.loadLogs();
+		    			}
+		    		});
+		            
+		            saveDrawing.addActionListener(new ActionListener() {
+		    			public void actionPerformed(ActionEvent arg0) {
+		    				List<String> logs = new ArrayList<String>();
+		    				for (int i = 0; i < defaultListModel.size(); i++) {
+		    					logs.add(defaultListModel.get(i) + "\n");
+		    				}
+		    				
+		    				controller.saveLogs(logs);
+		    			}
+		    		});
+
+		            contextMenu.show(e.getComponent(), e.getX(), e.getY());
+		        }
+            }
+		});
+		
 		
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -289,6 +338,12 @@ public class Frame extends JFrame implements Observer {
 		btnRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.redo();
+			}
+		});
+		
+		btnLoadNextCommand.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.loadNextLog();
 			}
 		});
 	}
@@ -360,7 +415,15 @@ public class Frame extends JFrame implements Observer {
 	public void clearLogs() {
 		defaultListModel.clear();
 	}
-
+	
+	public void showLoadNextButton() {
+		bottomOfPanelForDrawing.setVisible(true);
+	}
+	
+	public void hideLoadNextButton() {
+		bottomOfPanelForDrawing.setVisible(false);
+	}
+ 
 	@Override
 	public void update(Observable o, Object arg) {
 		@SuppressWarnings("unchecked")
@@ -374,6 +437,7 @@ public class Frame extends JFrame implements Observer {
 		btnToBack.setEnabled(flags.get(6));
 		btnUndo.setEnabled(flags.get(7));
 		btnRedo.setEnabled(flags.get(8));
+		btnLoadNextCommand.setEnabled(flags.get(9));
 	}
 	
 }

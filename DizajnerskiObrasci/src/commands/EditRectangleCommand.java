@@ -37,4 +37,10 @@ public class EditRectangleCommand implements GenericCommand {
 		oldState.setWidth(original.getWidth());
 		oldState.setSelected(true);
 	}
+	
+	@Override
+	public String toString() {
+		return "Modified Rectangle " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
+	
 }

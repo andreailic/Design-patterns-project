@@ -28,5 +28,10 @@ public class EditPointCommand implements GenericCommand {
 		oldState.setBorderColor(original.getBorderColor());
 		oldState.setSelected(true);
 	}
+	
+	@Override
+	public String toString() {
+		return "Modified Point " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
 
 }

@@ -30,5 +30,10 @@ public class EditLineCommand implements GenericCommand {
 		oldState.setEndPoint(original.getEndPoint());
 		oldState.setSelected(true);
 	}
+	
+	@Override
+	public String toString() {
+		return "Modified Line " + "[" + oldState + "]" + " to [" + newState + "]";
+	}
 
 }

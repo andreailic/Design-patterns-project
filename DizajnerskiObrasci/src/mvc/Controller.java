@@ -2,7 +2,9 @@ package mvc;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import drawingDialogs.DonutDialog;
 import drawingDialogs.HexagonDialog;
 import drawingDialogs.RectangleDialog;
 import files.SaveDrawing;
+import files.SaveLog;
 import files.SaveManager;
 import geometry.AdapterHexagon;
 import geometry.Circle;
@@ -52,6 +55,7 @@ public class Controller extends Observable {
 	private Point firstClickedPointOfLine = null;
 	private Stack<GenericCommand> commandsForUndo = new Stack<GenericCommand>();
 	private Stack<GenericCommand> commandsForRedo = new Stack<GenericCommand>();
+	private List<String> loadedLogs = new ArrayList<String>();
 
 	public Controller(Model model, Frame frame) {
 		this.model = model;
@@ -82,7 +86,64 @@ public class Controller extends Observable {
 		firstClickedPointOfLine = null;
 		
 		frame.getView().repaint();
+		frame.hideLoadNextButton();
 		notifyAllObservers();
+	}
+	
+	public void loadNextLog() {
+		
+	}
+	
+	public void loadLogs() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select a file");
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		
+		if(fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			
+			try {
+				BufferedReader buffer = new BufferedReader(new FileReader(fileChooser.getSelectedFile().getAbsolutePath()));
+				newDrawing();
+				loadedLogs = new ArrayList<String>();
+				String text = "";
+				while((text = buffer.readLine()) != null) {
+					loadedLogs.add(text);
+				}
+				
+				buffer.close();
+				notifyAllObservers();
+				frame.showLoadNextButton();
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	
+	public void saveLogs(List<String> logs) {
+
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save logs");
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	
+		if(fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			
+			SaveManager manager = new SaveManager();
+			SaveLog saveLog = new SaveLog();
+			
+			String logToSave = "";
+			
+			for (String log : logs) {
+				logToSave = logToSave + log;
+			}
+			
+			saveLog.setLog(logToSave);
+			manager.setStrategy(saveLog);
+			manager.save(fileChooser.getSelectedFile().getAbsolutePath() + ".log");
+			
+			JOptionPane.showMessageDialog(null, "Successfully saved", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
+			
+		}
 	}
 	
 	public void openDrawing() {
@@ -147,6 +208,7 @@ public class Controller extends Observable {
 		frame.logCommand("UNDO");
 		commandsForRedo.push(command);
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 	}
 	
 	public void redo() {
@@ -160,6 +222,7 @@ public class Controller extends Observable {
 		frame.logCommand("REDO");
 		commandsForUndo.push(command);
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 	}
 	
 	public void up() {
@@ -171,8 +234,9 @@ public class Controller extends Observable {
 		commandsForUndo.push(command);
 		commandsForRedo.clear();
 		frame.getView().repaint();
-		frame.logCommand(command.toString());
+		frame.logCommand("Up " + command.toString());
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 	}
 
 	public void down() {
@@ -184,8 +248,9 @@ public class Controller extends Observable {
 		commandsForUndo.push(command);
 		commandsForRedo.clear();
 		frame.getView().repaint();
-		frame.logCommand(command.toString());
+		frame.logCommand("Down " + command.toString());
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 		
 	}
 
@@ -198,8 +263,9 @@ public class Controller extends Observable {
 		commandsForUndo.push(command);
 		commandsForRedo.clear();
 		frame.getView().repaint();
-		frame.logCommand(command.toString());
+		frame.logCommand("Front " + command.toString());
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 		
 	}
 
@@ -212,8 +278,9 @@ public class Controller extends Observable {
 		commandsForUndo.push(command);
 		commandsForRedo.clear();
 		frame.getView().repaint();
-		frame.logCommand(command.toString());
+		frame.logCommand("Back " + command.toString());
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 		
 	}
 	
@@ -226,6 +293,7 @@ public class Controller extends Observable {
 		frame.getView().repaint();
 		frame.logCommand(command.toString());
 		notifyAllObservers();
+		frame.hideLoadNextButton();
 	}
 
 	public void mouseClicked(MouseEvent clickedPoint) {
@@ -237,34 +305,37 @@ public class Controller extends Observable {
 				if (model.getShapes().get(i).contains(clickedPoint.getX(), clickedPoint.getY())
 						&& !model.getShapes().get(i).isSelected()) {
 
-					SelectShapeCommand command = new SelectShapeCommand(model.getShapes().get(i));
+					SelectShapeCommand command = new SelectShapeCommand(model.getShapes().get(i), model);
 					command.forward();
 					commandsForUndo.push(command);
 					commandsForRedo.clear();
 					frame.logCommand(command.toString());
 					frame.getView().repaint();
 					notifyAllObservers();
+					frame.hideLoadNextButton();
 					return;
 				} else if (model.getShapes().get(i).contains(clickedPoint.getX(), clickedPoint.getY())
 						&& model.getShapes().get(i).isSelected()) {
 
 					List<Shape> helpList = new ArrayList<Shape>();
 					helpList.add(model.getShapes().get(i));
-					DeselectCommand command = new DeselectCommand(helpList);
+					DeselectCommand command = new DeselectCommand(helpList, model);
 					command.forward();
 					commandsForUndo.push(command);
 					commandsForRedo.clear();
 					frame.logCommand(command.toString());
 					frame.getView().repaint();
 					notifyAllObservers();
+					frame.hideLoadNextButton();
 					return;
 				}
 			}
 
-			DeselectCommand command = new DeselectCommand(model.getSelectedShapes());
+			DeselectCommand command = new DeselectCommand(model.getSelectedShapes(), model);
 			command.forward();
 			commandsForUndo.push(command);
 			commandsForRedo.clear();
+			frame.logCommand(command.toString());
 		} else if (frame.getTglbtnPoint().isSelected()) {
 			Point point = new Point(clickedPoint.getX(), clickedPoint.getY());
 			point.setBorderColor(frame.getBorderColor());
@@ -349,6 +420,7 @@ public class Controller extends Observable {
 		
 		notifyAllObservers();
 		frame.repaint();
+		frame.hideLoadNextButton();
 	}
 	
 	public void edit() {
@@ -534,6 +606,7 @@ public class Controller extends Observable {
 		
 		notifyAllObservers();
 		frame.repaint();
+		frame.hideLoadNextButton();
 	}
 
 	public void notifyAllObservers() {
@@ -559,6 +632,8 @@ public class Controller extends Observable {
 			downEnabled = toBackEnabled = model.getIndexOfShape(selectedShape) > 0;
 		}
 		
+		boolean loadNextCommandEnabled = loadedLogs.size() > 0; 
+		
 		flags.add(0, editEnabled);
 		flags.add(1, selectEnabled);
 		flags.add(2, deleteEnabled);
@@ -568,6 +643,7 @@ public class Controller extends Observable {
 		flags.add(6, toBackEnabled);
 		flags.add(7, undoEnabled);
 		flags.add(8, redoEnabled);
+		flags.add(9, loadNextCommandEnabled);
 		
 		setChanged();
 		notifyObservers(flags);
