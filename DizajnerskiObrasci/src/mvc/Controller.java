@@ -30,6 +30,7 @@ import drawingDialogs.CircleDialog;
 import drawingDialogs.DonutDialog;
 import drawingDialogs.HexagonDialog;
 import drawingDialogs.RectangleDialog;
+import files.LogParser;
 import files.SaveDrawing;
 import files.SaveLog;
 import files.SaveManager;
@@ -91,7 +92,16 @@ public class Controller extends Observable {
 	}
 	
 	public void loadNextLog() {
-		
+		String log = loadedLogs.get(0);
+		LogParser parser = new LogParser(model);
+		GenericCommand parsedCommand = parser.parse(log);
+		loadedLogs.remove(0);
+		frame.getView().repaint();
+		commandsForRedo.add(parsedCommand);
+		notifyAllObservers();
+		if (loadedLogs.size() == 0) {
+			frame.hideLoadNextButton();
+		}
 	}
 	
 	public void loadLogs() {
@@ -510,38 +520,7 @@ public class Controller extends Observable {
 				commandsForRedo.clear();
 				frame.logCommand(command.toString());
 			}
-		}  else if (selectedShape instanceof Circle) {
-			Circle circle = (Circle) selectedShape;
-			
-			CircleModificationDialog dialog = new CircleModificationDialog();
-			dialog.setTxtStartX(String.valueOf(circle.getCenter().getX()));
-			dialog.setTxtStartY(String.valueOf(circle.getCenter().getY()));
-			dialog.setTxtRadius(String.valueOf(circle.getR()));
-			dialog.setBorderColor(circle.getBorderColor());
-			dialog.setAreaColor(circle.getFillColor());
-			
-			dialog.setVisible(true);
-			
-			if (dialog.isConfirmed()) {
-				int x = Integer.parseInt(dialog.getTxtStartX());
-				int y = Integer.parseInt(dialog.getTxtStartY());
-				int radius = Integer.parseInt(dialog.getTxtRadius());
-				Color borderColor = dialog.getBorderColor();
-				Color areaColor = dialog.getAreaColor();
-				
-				Circle editedCircle = new Circle();
-				editedCircle.setCenter(new Point(x,y));
-				editedCircle.setR(radius);
-				editedCircle.setBorderColor(borderColor);
-				editedCircle.setFillColor(areaColor);
-				
-				EditCircleCommand command = new EditCircleCommand(circle, editedCircle);
-				command.forward();
-				commandsForUndo.push(command);
-				commandsForRedo.clear();
-				frame.logCommand(command.toString());
-			}
-		}   else if (selectedShape instanceof Donut) {
+		} else if (selectedShape instanceof Donut) {
 			Donut donut = (Donut) selectedShape;
 			
 			DonutModificationDialog dialog = new DonutModificationDialog();
@@ -570,6 +549,37 @@ public class Controller extends Observable {
 				editedDonut.setFillColor(areaColor);
 				
 				EditDonutCommand command = new EditDonutCommand(donut, editedDonut);
+				command.forward();
+				commandsForUndo.push(command);
+				commandsForRedo.clear();
+				frame.logCommand(command.toString());
+			}
+		} else if (selectedShape instanceof Circle) {
+			Circle circle = (Circle) selectedShape;
+			
+			CircleModificationDialog dialog = new CircleModificationDialog();
+			dialog.setTxtStartX(String.valueOf(circle.getCenter().getX()));
+			dialog.setTxtStartY(String.valueOf(circle.getCenter().getY()));
+			dialog.setTxtRadius(String.valueOf(circle.getR()));
+			dialog.setBorderColor(circle.getBorderColor());
+			dialog.setAreaColor(circle.getFillColor());
+			
+			dialog.setVisible(true);
+			
+			if (dialog.isConfirmed()) {
+				int x = Integer.parseInt(dialog.getTxtStartX());
+				int y = Integer.parseInt(dialog.getTxtStartY());
+				int radius = Integer.parseInt(dialog.getTxtRadius());
+				Color borderColor = dialog.getBorderColor();
+				Color areaColor = dialog.getAreaColor();
+				
+				Circle editedCircle = new Circle();
+				editedCircle.setCenter(new Point(x,y));
+				editedCircle.setR(radius);
+				editedCircle.setBorderColor(borderColor);
+				editedCircle.setFillColor(areaColor);
+				
+				EditCircleCommand command = new EditCircleCommand(circle, editedCircle);
 				command.forward();
 				commandsForUndo.push(command);
 				commandsForRedo.clear();

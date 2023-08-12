@@ -40,7 +40,7 @@ public class DeselectCommand implements GenericCommand {
 		}
 		
 		indices = indices.substring(0, indices.length() - 1);
-		return "Desected shapes on indices:" + indices;
+		return "Deselect shapes on indices: " + indices;
 	}
 
 }
