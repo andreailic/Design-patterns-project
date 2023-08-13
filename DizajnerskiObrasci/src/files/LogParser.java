@@ -334,14 +334,14 @@ public class LogParser {
 			DeleteCommand command = new DeleteCommand(shapes, model);
 			command.forward();
 			return command;
-		} else if(line[0].equals("Undo")) {
+		} else if(line[0].equals("UNDO")) {
 			GenericCommand command = undoList.get(undoList.size() - 1);
 			UndoCommand undoCommand = new UndoCommand(command);
 			undoCommand.forward();
 			redoList.add(command);
 			undoList.remove(undoList.size() - 1);
 			return undoCommand;
-		} else if(line[0].equals("Redo")) {
+		} else if(line[0].equals("REDO")) {
 			GenericCommand command = redoList.get(redoList.size() - 1);
 			RedoCommand redoCommand = new RedoCommand(command);
 			redoCommand.forward();

@@ -177,7 +177,7 @@ public class Frame extends JFrame implements Observer {
 		
 		JPanel logsContainer = new JPanel();
 		logsContainer.setLayout(new BorderLayout());
-		logsContainer.setMinimumSize(new Dimension(200, 0));
+		logsContainer.setPreferredSize(new Dimension(300, 0));
 		getContentPane().add(logsContainer, BorderLayout.EAST);
 		
 		defaultListModel = new DefaultListModel<String>();

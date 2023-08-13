@@ -57,10 +57,12 @@ public class Controller extends Observable {
 	private Stack<GenericCommand> commandsForUndo = new Stack<GenericCommand>();
 	private Stack<GenericCommand> commandsForRedo = new Stack<GenericCommand>();
 	private List<String> loadedLogs = new ArrayList<String>();
+	private LogParser parser;
 
 	public Controller(Model model, Frame frame) {
 		this.model = model;
 		this.frame = frame;
+		this.parser = new LogParser(model);
 	}
 
 	public Model getModel() {
@@ -93,11 +95,11 @@ public class Controller extends Observable {
 	
 	public void loadNextLog() {
 		String log = loadedLogs.get(0);
-		LogParser parser = new LogParser(model);
 		GenericCommand parsedCommand = parser.parse(log);
 		loadedLogs.remove(0);
 		frame.getView().repaint();
-		commandsForRedo.add(parsedCommand);
+		frame.logCommand(log);
+		commandsForUndo.add(parsedCommand);
 		notifyAllObservers();
 		if (loadedLogs.size() == 0) {
 			frame.hideLoadNextButton();
