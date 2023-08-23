@@ -333,6 +333,8 @@ public class LogParser {
 			List<Shape> shapes = model.getSelectedShapes();
 			DeleteCommand command = new DeleteCommand(shapes, model);
 			command.forward();
+			undoList.add(command);
+			redoList.clear();
 			return command;
 		} else if(line[0].equals("UNDO")) {
 			GenericCommand command = undoList.get(undoList.size() - 1);
