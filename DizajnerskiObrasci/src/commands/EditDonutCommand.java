@@ -23,7 +23,7 @@ public class EditDonutCommand implements GenericCommand {
 		oldState.getCenter().setY(newState.getCenter().getY());
 		oldState.setFillColor(newState.getFillColor());
 		oldState.setInnerRadius(newState.getInnerRadius());
-		oldState.setSelected(newState.isSelected());
+		oldState.setSelected(true);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class EditDonutCommand implements GenericCommand {
 		oldState.getCenter().setY(original.getCenter().getY());
 		oldState.setFillColor(original.getFillColor());
 		oldState.setInnerRadius(original.getInnerRadius());
-		oldState.setSelected(original.isSelected());
+		oldState.setSelected(true);
 	}
 	
 	@Override

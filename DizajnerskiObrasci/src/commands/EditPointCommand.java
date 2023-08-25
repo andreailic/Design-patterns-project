@@ -19,6 +19,7 @@ public class EditPointCommand implements GenericCommand {
 		oldState.setX(newState.getX());
 		oldState.setY(newState.getY());
 		oldState.setBorderColor(newState.getBorderColor());
+		oldState.setSelected(true);
 	}
 
 	@Override

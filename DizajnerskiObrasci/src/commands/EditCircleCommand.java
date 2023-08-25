@@ -21,7 +21,7 @@ public class EditCircleCommand implements GenericCommand {
 		oldState.getCenter().setX(newState.getCenter().getX());
 		oldState.getCenter().setY(newState.getCenter().getY());
 		oldState.setFillColor(newState.getFillColor());
-		oldState.setSelected(newState.isSelected());
+		oldState.setSelected(true);
 
 	}
 
@@ -32,7 +32,7 @@ public class EditCircleCommand implements GenericCommand {
 		oldState.getCenter().setX(original.getCenter().getX());
 		oldState.getCenter().setY(original.getCenter().getY());
 		oldState.setFillColor(original.getFillColor());
-		oldState.setSelected(original.isSelected());
+		oldState.setSelected(true);
 	}
 	
 	@Override

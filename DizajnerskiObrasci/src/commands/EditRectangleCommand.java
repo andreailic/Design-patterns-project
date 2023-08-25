@@ -25,7 +25,7 @@ public class EditRectangleCommand implements GenericCommand {
 		oldState.getUpperLeftPoint().setX(newState.getUpperLeftPoint().getX());
 		oldState.getUpperLeftPoint().setY(newState.getUpperLeftPoint().getY());
 		oldState.setWidth(newState.getWidth());
-		oldState.setSelected(false);
+		oldState.setSelected(true);
 	}
 
 	@Override

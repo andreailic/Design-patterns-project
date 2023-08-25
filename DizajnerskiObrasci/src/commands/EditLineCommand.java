@@ -20,7 +20,7 @@ public class EditLineCommand implements GenericCommand {
 		oldState.setBorderColor(newState.getBorderColor());
 		oldState.setStartPoint(newState.getStartPoint());
 		oldState.setEndPoint(newState.getEndPoint());
-		oldState.setSelected(false);
+		oldState.setSelected(true);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class EditHexagonCommand implements GenericCommand {
 		oldState.setX(newState.getX());
 		oldState.setY(newState.getY());
 		oldState.setFillColor(newState.getFillColor());
-		oldState.setSelected(newState.isSelected());
+		oldState.setSelected(true);
 
 	}
 
@@ -33,7 +33,7 @@ public class EditHexagonCommand implements GenericCommand {
 		oldState.setX(original.getX());
 		oldState.setY(original.getY());
 		oldState.setFillColor(original.getFillColor());
-		oldState.setSelected(original.isSelected());
+		oldState.setSelected(true);
 	}
 	
 	@Override
